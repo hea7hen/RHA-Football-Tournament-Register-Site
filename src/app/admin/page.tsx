@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { collection, deleteDoc, doc, getDocs, query, updateDoc, DocumentData } from "firebase/firestore";
@@ -212,7 +212,7 @@ function Td({ children }: { children: React.ReactNode }) {
   return <td className="px-3 py-2 align-top">{children}</td>;
 }
 
-function InlineEdit({ value, onSave }: { value: string; onSave: (v: string) => Promise<any> }) {
+function InlineEdit({ value, onSave }: { value: string; onSave: (v: string) => Promise<void> }) {
   const [v, setV] = useState(value);
   const [saving, setSaving] = useState(false);
   return (
