@@ -80,10 +80,11 @@ export default function StudentForm({
       setSubmitOk(`Saved: ${data.studentName}`);
       onAdded();
       reset({ studentName: "", dob: "", schoolName: defaultSchool, skillLevel: "Average", clusterName: defaultCluster });
-    } catch (e: any) {
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Failed to save. Check Firestore rules and network.";
       // eslint-disable-next-line no-console
       console.error("Student save error", e);
-      setSubmitError(e?.message ?? "Failed to save. Check Firestore rules and network.");
+      setSubmitError(message);
     } finally {
       setSubmitting(false);
     }

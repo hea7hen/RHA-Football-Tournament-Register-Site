@@ -70,7 +70,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="rounded-md border p-3">
                 <div className="text-xs text-gray-500">Robin</div>
                 <div className="font-medium">{robin.robinName}</div>
@@ -83,7 +83,7 @@ export default function Home() {
                 <div className="text-xs text-gray-500">Session Students</div>
                 <div className="font-medium text-[var(--rha-green)]">{sessionCount}</div>
               </div>
-            </div>
+            </div> */}
 
             <Rules agreed={agreed} onChange={setAgreed} />
 

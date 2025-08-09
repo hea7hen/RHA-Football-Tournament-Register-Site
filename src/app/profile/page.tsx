@@ -16,7 +16,12 @@ export default function ProfilePage() {
     async function load() {
       if (!user) return;
       const snap = await getDoc(doc(db, "users", user.uid));
-      const data = snap.data() as any;
+      const data = snap.data() as {
+        displayName?: string;
+        contact?: string;
+        schoolName?: string;
+        clusterName?: string;
+      } | undefined;
       if (data) {
         setInitial({
           robinName: data.displayName ?? "",

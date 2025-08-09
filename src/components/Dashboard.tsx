@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, onSnapshot, query } from "firebase/firestore";
+import { collection, onSnapshot, query, DocumentData } from "firebase/firestore";
 import { Bar, Pie } from "react-chartjs-2";
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, ArcElement, Tooltip, Legend } from "chart.js";
 import { downloadCsv } from "@/utils/csv";
@@ -29,7 +29,7 @@ export default function Dashboard() {
     const q = query(collection(db, "students"));
     const unsub = onSnapshot(q, (snap) => {
       const rows: StudentRow[] = [];
-      snap.forEach((doc) => rows.push({ id: doc.id, ...(doc.data() as any) }));
+      snap.forEach((doc) => rows.push({ id: doc.id, ...(doc.data() as DocumentData) } as StudentRow));
       setStudents(rows);
     });
     return () => unsub();
@@ -41,7 +41,7 @@ export default function Dashboard() {
         ? [s.studentName, s.schoolName, s.clusterName].some((v) => v?.toLowerCase().includes(search.toLowerCase()))
         : true;
       const matchCluster = cluster ? s.clusterName === cluster : true;
-      const matchSkill = skill ? s.skillLevel === (skill as any) : true;
+      const matchSkill = skill ? s.skillLevel === (skill as StudentRow["skillLevel"]) : true;
       return matchSearch && matchCluster && matchSkill;
     });
   }, [students, search, cluster, skill]);

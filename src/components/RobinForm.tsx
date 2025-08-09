@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -67,8 +67,9 @@ export default function RobinForm({ onSaved, initial }: { onSaved: (data: RobinI
         { merge: true }
       );
       onSaved(data);
-    } catch (e: any) {
-      setSubmitError(e?.message ?? "Failed to save. Please try again.");
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Failed to save. Please try again.";
+      setSubmitError(message);
     } finally {
       setSubmitting(false);
     }
