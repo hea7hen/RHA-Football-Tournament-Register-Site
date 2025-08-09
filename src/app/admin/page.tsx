@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { collection, deleteDoc, doc, getDocs, query, updateDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, query, updateDoc, DocumentData } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 
 type StudentRow = {
@@ -37,16 +37,21 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function loadAll() {
+  async function loadAll(): Promise<void> {
     setLoading(true);
     setError(null);
     try {
       const s = await getDocs(query(collection(db, "students")));
       const r = await getDocs(query(collection(db, "users")));
-      setStudents(s.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as any);
-      setRobins(r.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as any);
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to fetch");
+      setStudents(
+        s.docs.map((d) => ({ id: d.id, ...(d.data() as DocumentData) } as StudentRow))
+      );
+      setRobins(
+        r.docs.map((d) => ({ id: d.id, ...(d.data() as DocumentData) } as UserRow))
+      );
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Failed to fetch";
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -121,7 +126,10 @@ export default function AdminPage() {
                   <Td>{s.age ?? "-"}</Td>
                   <Td><InlineEdit value={s.schoolName} onSave={(v) => updateDoc(doc(db, "students", s.id), { schoolName: v })} /></Td>
                   <Td>
-                    <InlineEdit value={s.skillLevel} onSave={(v) => updateDoc(doc(db, "students", s.id), { skillLevel: v as any })} />
+                    <InlineEdit
+                      value={s.skillLevel}
+                      onSave={(v) => updateDoc(doc(db, "students", s.id), { skillLevel: v as StudentRow["skillLevel"] })}
+                    />
                   </Td>
                   <Td><InlineEdit value={s.clusterName} onSave={(v) => updateDoc(doc(db, "students", s.id), { clusterName: v })} /></Td>
                   <Td>
@@ -132,8 +140,9 @@ export default function AdminPage() {
                           if (!confirm(`Delete ${s.studentName}?`)) return;
                           await deleteDoc(doc(db, "students", s.id));
                           await loadAll();
-                        } catch (e: any) {
-                          setError(e?.message ?? "Delete failed: check Firestore rules/App Check.");
+                        } catch (e) {
+                          const message = e instanceof Error ? e.message : "Delete failed: check Firestore rules/App Check.";
+                          setError(message);
                         }
                       }}
                     >
@@ -177,8 +186,9 @@ export default function AdminPage() {
                           if (!confirm(`Delete ${r.displayName ?? r.email ?? r.id}?`)) return;
                           await deleteDoc(doc(db, "users", r.id));
                           await loadAll();
-                        } catch (e: any) {
-                          setError(e?.message ?? "Delete failed: check Firestore rules/App Check.");
+                        } catch (e) {
+                          const message = e instanceof Error ? e.message : "Delete failed: check Firestore rules/App Check.";
+                          setError(message);
                         }
                       }}
                     >

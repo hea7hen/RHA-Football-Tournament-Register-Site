@@ -9,7 +9,7 @@ import Rules from "@/components/Rules";
 import Dashboard from "@/components/Dashboard";
 import Header from "@/components/Header";
 import { useEffect, useState } from "react";
-import { db, auth as firebaseAuth } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
 export default function Home() {
@@ -23,7 +23,12 @@ export default function Home() {
       if (!user) return;
       const ref = doc(db, "users", user.uid);
       const snap = await getDoc(ref);
-      const data = snap.data() as any;
+      const data = snap.data() as {
+        displayName?: string;
+        contact?: string;
+        schoolName?: string;
+        clusterName?: string;
+      } | undefined;
       if (data) {
         setRobin({
           robinName: data.displayName ?? "",
